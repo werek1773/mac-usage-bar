@@ -1,0 +1,21 @@
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon?
+._*
+
+# Build output (distributed via GitHub Releases)
+build/
+
+# Xcode / clang artifacts
+*.o
+*.dSYM/
+DerivedData/
+build/Build/
+
+# Editors
+*.swp
+*.swo
+.vscode/
+.idea/
