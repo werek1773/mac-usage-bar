@@ -8,6 +8,9 @@ Icon?
 # Build output (distributed via GitHub Releases)
 build/
 
+# Local release artifacts (uploaded to GitHub Releases, not committed)
+*.zip
+
 # Xcode / clang artifacts
 *.o
 *.dSYM/
