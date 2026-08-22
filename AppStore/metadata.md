@@ -1,0 +1,97 @@
+# Mac App Store metadata
+
+## Shared values
+
+- App name: `Mac Usage Bar`
+- Primary category: `Utilities`
+- Pricing: `Free`
+- Bundle ID: `pl.marcin.macusagebar.final`
+- Support URL: `https://github.com/werek1773/mac-usage-bar/issues`
+- Marketing URL: `https://github.com/werek1773/mac-usage-bar`
+- Privacy policy URL: `https://github.com/werek1773/mac-usage-bar#privacy`
+- App privacy: `Data Not Collected`
+- Encryption: the app does not use non-exempt encryption
+
+## English (primary)
+
+Subtitle:
+
+`Live Mac stats in the menu bar`
+
+Promotional text:
+
+`See CPU, memory, battery, power, disk, and network activity at a glance — privately, with no accounts, ads, or analytics.`
+
+Keywords:
+
+`cpu,ram,memory,battery,power,disk,network,monitor,menu bar,system,performance,stats`
+
+Description:
+
+`Mac Usage Bar puts the most useful Mac performance information directly in your menu bar. Open its compact dashboard for live CPU and memory graphs, battery health and power draw, disk usage, network speed, and thermal state.`
+
+`The menu bar readout automatically adapts to the available space, from a detailed overview to a minimal CPU indicator. Choose from four themes and switch between English and Polish at any time.`
+
+`Privacy comes first: Mac Usage Bar works entirely on your Mac. It has no accounts, ads, analytics, tracking, or network requests. Your system statistics never leave your device.`
+
+`Features:`
+
+`• Live CPU and memory usage with two-minute graphs`
+
+`• Battery percentage, health, cycle count, charging state, remaining time, and power draw`
+
+`• Startup disk usage and free space`
+
+`• Live download and upload speed`
+
+`• Adaptive menu bar display and fullscreen-aware hiding`
+
+`• Four visual themes`
+
+`• English and Polish interface`
+
+`• Native, lightweight, ad-free, and fully local`
+
+## Polish localization
+
+Subtitle:
+
+`Statystyki Maca w pasku menu`
+
+Promotional text:
+
+`CPU, RAM, bateria, moc, dysk i sieć — zawsze pod ręką, bez konta, reklam i analityki.`
+
+Keywords:
+
+`cpu,ram,pamięć,bateria,moc,dysk,sieć,monitor,pasek menu,system,wydajność,statystyki`
+
+Description:
+
+`Mac Usage Bar umieszcza najważniejsze informacje o wydajności Maca bezpośrednio na pasku menu. Otwórz kompaktowy panel, aby zobaczyć na żywo wykresy CPU i pamięci, kondycję baterii i pobór mocy, zajętość dysku, prędkość sieci oraz stan termiczny.`
+
+`Odczyt na pasku menu automatycznie dopasowuje się do dostępnego miejsca — od pełnego zestawu informacji po minimalny wskaźnik CPU. Wybierz jeden z czterech motywów i w dowolnej chwili przełącz interfejs między językiem polskim i angielskim.`
+
+`Prywatność przede wszystkim: Mac Usage Bar działa w całości na Twoim Macu. Nie ma kont, reklam, analityki, śledzenia ani zapytań sieciowych. Statystyki systemowe nigdy nie opuszczają urządzenia.`
+
+`Funkcje:`
+
+`• Użycie CPU i pamięci na żywo z wykresami z ostatnich dwóch minut`
+
+`• Poziom, kondycja i cykle baterii, stan ładowania, pozostały czas oraz pobór mocy`
+
+`• Zajęte i wolne miejsce na dysku startowym`
+
+`• Aktualna prędkość pobierania i wysyłania`
+
+`• Adaptacyjny odczyt na pasku menu i ukrywanie w trybie pełnoekranowym`
+
+`• Cztery motywy graficzne`
+
+`• Polski i angielski interfejs`
+
+`• Natywna, lekka aplikacja bez reklam, działająca w pełni lokalnie`
+
+## App Review notes
+
+`Mac Usage Bar is a menu-bar-only app (LSUIElement), so it does not show a Dock icon or a conventional main window. After launch, click the Mac Usage Bar readout in the macOS menu bar to open the dashboard. The app reads system metrics locally using public macOS APIs. It makes no network requests and collects no data. On a desktop Mac, the battery card correctly displays “No battery”. The Mac App Store target intentionally excludes the direct-download build's memory optimization feature and does not request administrator privileges.`

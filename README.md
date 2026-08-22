@@ -52,7 +52,7 @@ A frosted‑glass panel with **cards**, each refreshing every 2 seconds:
 | **Top apps** | Top 30 resource‑hungry processes, grouped by app, sortable by CPU / RAM |
 
 ### Other features
-- 🪄 **Optimize** button — safely frees memory (`/usr/sbin/purge`, asks for your password once).
+- 🪄 **Optimize** button in the direct GitHub build — frees memory with `/usr/sbin/purge` and asks for administrator approval. The Mac App Store build omits this feature to comply with sandbox rules.
 - 🎨 **4 themes** — Midnight, Graphite, Aurora, Liquid Glass.
 - 🌐 **Two languages** — Polish & English, switchable with a live toggle.
 - 🧠 Smart process names (resolves `.app` names; friendly labels for system daemons).
@@ -100,7 +100,7 @@ Panel z efektem szkła i **kartami**, odświeżanymi co 2 sekundy:
 | **Top aplikacje** | 30 najbardziej obciążających procesów, zgrupowanych po aplikacji, sortowanie CPU / RAM |
 
 ### Inne funkcje
-- 🪄 Przycisk **Optymalizuj** — bezpiecznie zwalnia pamięć (`/usr/sbin/purge`, raz pyta o hasło).
+- 🪄 Przycisk **Optymalizuj** w wydaniu pobieranym z GitHuba — zwalnia pamięć przez `/usr/sbin/purge` i prosi o zgodę administratora. Wersja dla Mac App Store nie zawiera tej funkcji ze względu na zasady sandboxa.
 - 🎨 **4 motywy** — Midnight, Graphite, Aurora, Liquid Glass.
 - 🌐 **Dwa języki** — polski i angielski, przełączane animowanym suwakiem.
 - 🧠 Mądre nazwy procesów (rozpoznaje nazwy `.app`; przyjazne etykiety demonów systemowych).
@@ -134,6 +134,18 @@ cd mac-usage-bar/MacUsageBar
 The script compiles `main.m` with `clang` and outputs the signed `.app` bundle to `../build/Mac Usage Bar.app`.
 
 > Building from source produces a **universal/native binary for your Mac** — so Intel users get an Intel build automatically.
+
+### Mac App Store build
+
+Open `MacUsageBar.xcodeproj`, select the `MacUsageBar` scheme, and archive the Release configuration. This target:
+
+- enables App Sandbox and hardened runtime,
+- produces a universal Apple Silicon + Intel app,
+- includes the privacy manifest,
+- excludes memory optimization, administrator escalation, private frameworks, cross-bundle preferences, and terminating other apps.
+- omits system-wide per-process statistics, because App Sandbox does not permit reading resource usage from other apps.
+
+Use a stable release of Xcode for the production archive. Store metadata and the release checklist live in `AppStore/`.
 
 ---
 

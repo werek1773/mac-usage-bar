@@ -1,24 +1,29 @@
 #import <Cocoa/Cocoa.h>
+
+#ifndef APP_STORE_BUILD
+#define APP_STORE_BUILD 0
+#endif
+
 #import <CoreGraphics/CoreGraphics.h>
 #import <QuartzCore/QuartzCore.h>
 #import <IOKit/IOKitLib.h>
 #import <IOKit/ps/IOPowerSources.h>
 #import <IOKit/ps/IOPSKeys.h>
+#if !APP_STORE_BUILD
 #import <ServiceManagement/ServiceManagement.h>
+#import <dlfcn.h>
+#endif
 #import <ifaddrs.h>
 #import <net/if.h>
 #import <net/if_dl.h>
 #import <sys/sysctl.h>
+#if !APP_STORE_BUILD
 #import <libproc.h>
+#endif
 #import <mach/mach.h>
 #import <mach/processor_info.h>
 #import <mach/mach_host.h>
-#import <dlfcn.h>
 #import <math.h>
-
-#ifndef APP_STORE_BUILD
-#define APP_STORE_BUILD 0
-#endif
 
 static NSString *FormatBytes(double bytes) {
     if (bytes >= 1e9) return [NSString stringWithFormat:@"%.1f GB", bytes / 1e9];
@@ -40,7 +45,9 @@ static NSString *CompactRemainingTime(NSString *time) {
 
 static NSColor *PanelTextPrimary(void) { return [NSColor colorWithWhite:0.96 alpha:1.0]; }
 static NSColor *PanelTextSecondary(void) { return [NSColor colorWithWhite:0.80 alpha:1.0]; }
+#if !APP_STORE_BUILD
 static NSColor *PanelTextTertiary(void) { return [NSColor colorWithWhite:0.65 alpha:1.0]; }
+#endif
 
 typedef struct { uint64_t user, system, idle, nice; } CPUState;
 
@@ -51,24 +58,30 @@ typedef struct { uint64_t user, system, idle, nice; } CPUState;
 @property double diskUsed, diskTotal, networkDown, networkUp, batteryWatts;
 @property BOOL hasBattery, charging, onAC;
 @property(copy) NSString *timeRemaining;
+#if !APP_STORE_BUILD
 @property NSArray *processes;
+#endif
 @end
 @implementation MonitorSnapshot @end
 
+#if !APP_STORE_BUILD
 @interface ProcessSample : NSObject
 @property(copy) NSString *name;
 @property NSInteger pid;
 @property double cpu, memory;
 @end
 @implementation ProcessSample @end
+#endif
 
 @interface SystemMonitor : NSObject
 @property CPUState previousCPU;
 @property BOOL hasPreviousCPU, hasNetwork;
 @property uint64_t previousDown, previousUp;
 @property NSTimeInterval previousNetworkTime;
+#if !APP_STORE_BUILD
 @property NSMutableDictionary<NSNumber *, NSNumber *> *processTimes;
 @property NSTimeInterval previousProcessTime;
+#endif
 - (MonitorSnapshot *)snapshot;
 @end
 
@@ -170,6 +183,7 @@ typedef struct { uint64_t user, system, idle, nice; } CPUState;
     }
 }
 
+#if !APP_STORE_BUILD
 - (void)fillProcesses:(MonitorSnapshot *)s {
     int bytes = proc_listpids(PROC_ALL_PIDS, 0, NULL, 0);
     if (bytes <= 0) { s.processes = @[]; return; }
@@ -215,10 +229,14 @@ typedef struct { uint64_t user, system, idle, nice; } CPUState;
     }];
     s.processes = [samples subarrayWithRange:NSMakeRange(0, MIN(30, samples.count))];
 }
+#endif
 
 - (MonitorSnapshot *)snapshot {
     MonitorSnapshot *s = [MonitorSnapshot new];
-    s.cpu = [self cpuUsage]; [self fillMemory:s]; [self fillDisk:s]; [self fillNetwork:s]; [self fillBattery:s]; [self fillProcesses:s];
+    s.cpu = [self cpuUsage]; [self fillMemory:s]; [self fillDisk:s]; [self fillNetwork:s]; [self fillBattery:s];
+#if !APP_STORE_BUILD
+    [self fillProcesses:s];
+#endif
     s.thermalState = NSProcessInfo.processInfo.thermalState;
     return s;
 }
@@ -227,21 +245,31 @@ typedef struct { uint64_t user, system, idle, nice; } CPUState;
 @interface DashboardView : NSView
 @property MonitorSnapshot *data;
 @property NSMutableArray<NSNumber *> *cpuHistory, *ramHistory, *downHistory, *upHistory;
+#if !APP_STORE_BUILD
 @property NSInteger processSortMode;
+#endif
+#if !APP_STORE_BUILD
 @property(copy) void (^optimizeHandler)(void);
+#endif
 @property(copy) void (^languageChangedHandler)(BOOL polish);
+#if !APP_STORE_BUILD
 @property BOOL optimizing;
+#endif
 @property BOOL polish, languageAnimating;
 @property NSInteger theme;
 @property BOOL themePickerOpen;
 @property double themeToastStart;
 @property double languageThumb, languageFrom, languageTo, languageAnimationStart;
 @property NSTimer *languageTimer;
+#if !APP_STORE_BUILD
 @property double optimizedBytes, animationStart, animationSeed;
 @property NSTimer *animationTimer;
+#endif
 - (void)accept:(MonitorSnapshot *)data;
+#if !APP_STORE_BUILD
 - (void)startOptimization;
 - (void)finishOptimization:(double)bytes;
+#endif
 - (void)setPolishAnimated:(BOOL)polish;
 - (void)setThemeAnimated:(NSInteger)theme;
 @end
@@ -252,7 +280,9 @@ typedef struct { uint64_t user, system, idle, nice; } CPUState;
         self.wantsLayer = YES; self.layer.cornerRadius = 14;
         self.cpuHistory = [NSMutableArray array]; self.ramHistory = [NSMutableArray array];
         self.downHistory = [NSMutableArray array]; self.upHistory = [NSMutableArray array];
+#if !APP_STORE_BUILD
         self.processSortMode = 1;
+#endif
         self.polish = [[[NSUserDefaults standardUserDefaults] stringForKey:@"MacUsageBarLanguage"] isEqualToString:@"pl"];
         self.languageThumb = self.polish ? 1.0 : 0.0;
         self.theme = MIN(3, MAX(0, [[NSUserDefaults standardUserDefaults] integerForKey:@"MacUsageBarTheme"]));
@@ -262,7 +292,7 @@ typedef struct { uint64_t user, system, idle, nice; } CPUState;
 - (void)mouseDown:(NSEvent *)event {
     NSPoint p = [self convertPoint:event.locationInWindow fromView:nil];
 #if APP_STORE_BUILD
-    if (p.x >= 264 && p.x <= 334 && p.y >= 10 && p.y <= 56 && !self.optimizing) {
+    if (p.x >= 264 && p.x <= 334 && p.y >= 10 && p.y <= 56) {
 #else
     if (self.themePickerOpen) {
         if (p.x >= 148 && p.x <= 404 && p.y >= 94 && p.y < 246) {
@@ -306,11 +336,13 @@ typedef struct { uint64_t user, system, idle, nice; } CPUState;
         return;
     }
 #endif
+#if !APP_STORE_BUILD
     if (p.y >= 602 && p.y <= 632) {
         if (p.x >= 275 && p.x < 345) self.processSortMode = 0;
         else if (p.x >= 345 && p.x <= 415) self.processSortMode = 1;
         [self setNeedsDisplay:YES];
     }
+#endif
 }
 - (void)setThemeAnimated:(NSInteger)theme {
     if (self.languageAnimating) return;
@@ -346,6 +378,7 @@ typedef struct { uint64_t user, system, idle, nice; } CPUState;
     [self setNeedsDisplay:YES];
     if (t >= 1.0) { [self.languageTimer invalidate]; self.languageTimer=nil; self.languageAnimating=NO; }
 }
+#if !APP_STORE_BUILD
 - (void)startOptimization {
     self.optimizing = YES; self.optimizedBytes = 0; self.animationStart = NSProcessInfo.processInfo.systemUptime;
     self.animationSeed = arc4random_uniform(10000) / 10000.0;
@@ -363,6 +396,7 @@ typedef struct { uint64_t user, system, idle, nice; } CPUState;
     if (!self.optimizing && elapsed > 3.2) { [self.animationTimer invalidate]; self.animationTimer = nil; }
     [self setNeedsDisplay:YES];
 }
+#endif
 - (void)add:(NSNumber *)n to:(NSMutableArray *)a { [a addObject:n]; if (a.count > 60) [a removeObjectAtIndex:0]; }
 - (void)accept:(MonitorSnapshot *)d {
     self.data = d; [self add:@(d.cpu) to:self.cpuHistory]; [self add:@(d.memoryPercent) to:self.ramHistory];
@@ -385,6 +419,7 @@ typedef struct { uint64_t user, system, idle, nice; } CPUState;
     if (d.onAC) return [self en:@"Power adapter connected" pl:@"Zasilacz podłączony"];
     return [self en:@"On battery" pl:@"Praca na baterii"];
 }
+#if !APP_STORE_BUILD
 - (NSString *)processName:(NSString *)name {
     if (!self.polish) return name;
     if ([name isEqualToString:@"WebKit — websites/apps"]) return @"WebKit — strony/aplikacje";
@@ -393,6 +428,7 @@ typedef struct { uint64_t user, system, idle, nice; } CPUState;
     if ([name isEqualToString:@"Node.js — developer tools"]) return @"Node.js — narzędzia deweloperskie";
     return name;
 }
+#endif
 - (NSString *)themeName {
     switch (self.theme) {
         case 1: return @"Graphite";
@@ -543,7 +579,11 @@ typedef struct { uint64_t user, system, idle, nice; } CPUState;
     [self card:NSMakeRect(214,68,w,h) title:[self en:@"MEMORY" pl:@"PAMIĘĆ RAM"] value:[NSString stringWithFormat:@"%ld%%",(long)d.memoryPercent] detail1:[NSString stringWithFormat:[self en:@"%@ of %@" pl:@"%@ z %@"],FormatBytes(d.memoryUsed),FormatBytes(d.memoryTotal)] detail2:[NSString stringWithFormat:@"Swap: %@",FormatBytes(d.swapUsed)] history:self.ramHistory color:purple max:100];
     NSString *batteryTime = d.timeRemaining ?: [self en:@"Calculating…" pl:@"Obliczanie…"];
     NSString *batteryDetail = d.hasBattery ? ([NSString stringWithFormat:@"%@%@", [self batteryStateText:d], (d.onAC && !d.charging ? @"" : [NSString stringWithFormat:@" • %@",batteryTime])]) : [self en:@"Desktop Mac" pl:@"Mac stacjonarny"];
-    [self card:NSMakeRect(16,246,w,h) title:[self en:@"BATTERY & POWER" pl:@"BATERIA I MOC"] value:(d.hasBattery?[NSString stringWithFormat:@"%ld%% • %.1f W",(long)d.batteryPercent,d.batteryWatts]:[self en:@"No battery" pl:@"Brak baterii"]) detail1:batteryDetail detail2:(d.hasBattery?[NSString stringWithFormat:[self en:@"Health: %ld%% • Cycles: %ld" pl:@"Kondycja: %ld%% • Cykle: %ld"],(long)d.batteryHealth,(long)d.cycles]:@"") history:@[] color:[NSColor systemGreenColor] max:100];
+    NSString *batteryStats = @"";
+    if (d.batteryHealth > 0 && d.cycles > 0) batteryStats=[NSString stringWithFormat:[self en:@"Health: %ld%% • Cycles: %ld" pl:@"Kondycja: %ld%% • Cykle: %ld"],(long)d.batteryHealth,(long)d.cycles];
+    else if (d.batteryHealth > 0) batteryStats=[NSString stringWithFormat:[self en:@"Health: %ld%%" pl:@"Kondycja: %ld%%"],(long)d.batteryHealth];
+    else if (d.cycles > 0) batteryStats=[NSString stringWithFormat:[self en:@"Cycles: %ld" pl:@"Cykle: %ld"],(long)d.cycles];
+    [self card:NSMakeRect(16,246,w,h) title:[self en:@"BATTERY & POWER" pl:@"BATERIA I MOC"] value:(d.hasBattery?[NSString stringWithFormat:@"%ld%% • %.1f W",(long)d.batteryPercent,d.batteryWatts]:[self en:@"No battery" pl:@"Brak baterii"]) detail1:batteryDetail detail2:batteryStats history:@[] color:[NSColor systemGreenColor] max:100];
     NSInteger diskPct=d.diskTotal?llround(d.diskUsed/d.diskTotal*100):0;
     [self card:NSMakeRect(214,246,w,h) title:[self en:@"DISK" pl:@"DYSK"] value:[NSString stringWithFormat:@"%ld%%",(long)diskPct] detail1:[NSString stringWithFormat:[self en:@"Used: %@" pl:@"Zajęte: %@"],FormatBytes(d.diskUsed)] detail2:[NSString stringWithFormat:[self en:@"Free: %@" pl:@"Wolne: %@"],FormatBytes(d.diskTotal-d.diskUsed)] history:@[] color:[NSColor systemOrangeColor] max:100];
     NSRect nr=NSMakeRect(16,424,388,120); NSBezierPath *nb=[NSBezierPath bezierPathWithRoundedRect:nr xRadius:(self.theme==3?16:10) yRadius:(self.theme==3?16:10)]; [[self cardBackgroundColor]setFill];[nb fill]; [[self cardStrokeColor]setStroke]; nb.lineWidth=self.theme==3?1.2:.6;[nb stroke];
@@ -551,6 +591,7 @@ typedef struct { uint64_t user, system, idle, nice; } CPUState;
     [self text:[NSString stringWithFormat:@"↓ %@     ↑ %@",FormatRate(d.networkDown),FormatRate(d.networkUp)] x:30 y:460 size:18 color:PanelTextPrimary() weight:NSFontWeightSemibold];
     [self spark:self.downHistory rect:NSMakeRect(30,493,360,36) color:blue max:0]; [self spark:self.upHistory rect:NSMakeRect(30,493,360,36) color:purple max:0];
     [self text:[NSString stringWithFormat:[self en:@"RAM: active %@  •  wired %@  •  compressed %@" pl:@"RAM: aktywna %@  •  przewodowa %@  •  skompresowana %@"],FormatBytes(d.memoryActive),FormatBytes(d.memoryWired),FormatBytes(d.memoryCompressed)] x:20 y:556 size:11 color:PanelTextSecondary() weight:NSFontWeightRegular];
+#if !APP_STORE_BUILD
     [self text:[self en:@"TOP RESOURCE-CONSUMING APPS" pl:@"NAJBARDZIEJ OBCIĄŻAJĄCE APLIKACJE"] x:20 y:590 size:12 color:[[self accentColor] colorWithAlphaComponent:.88] weight:NSFontWeightSemibold];
     [self text:[self en:@"App / process" pl:@"Aplikacja / proces"] x:20 y:614 size:10 color:PanelTextTertiary() weight:NSFontWeightRegular];
     [self text:(self.processSortMode==0 ? @"CPU ▼" : @"CPU") x:292 y:614 size:10 color:(self.processSortMode==0 ? blue : PanelTextTertiary()) weight:NSFontWeightSemibold];
@@ -571,6 +612,7 @@ typedef struct { uint64_t user, system, idle, nice; } CPUState;
         [self text:FormatBytes(p.memory) x:350 y:py size:11 color:purple weight:NSFontWeightMedium];
         py += 21;
     }
+#endif
 
     double themeToastElapsed = NSProcessInfo.processInfo.systemUptime - self.themeToastStart;
     if (self.themeToastStart > 0 && themeToastElapsed < 1.7) {
@@ -582,8 +624,8 @@ typedef struct { uint64_t user, system, idle, nice; } CPUState;
         [self text:themeLabel x:NSMidX(toast)-ts.width/2 y:72 size:12 color:NSColor.whiteColor weight:NSFontWeightSemibold];
     }
 
-    double elapsed = NSProcessInfo.processInfo.systemUptime - self.animationStart;
 #if !APP_STORE_BUILD
+    double elapsed = NSProcessInfo.processInfo.systemUptime - self.animationStart;
     if (self.optimizing || (self.animationStart > 0 && elapsed < 3.2)) {
         double mb = self.optimizedBytes / 1e6;
         double intensity = self.optimizing ? .32 : MIN(1.0, log1p(MAX(1, mb)) / log1p(5000.0));
@@ -618,7 +660,11 @@ typedef struct { uint64_t user, system, idle, nice; } CPUState;
     }
 #endif
 
-    if (self.themePickerOpen && !self.optimizing) {
+    if (self.themePickerOpen
+#if !APP_STORE_BUILD
+        && !self.optimizing
+#endif
+    ) {
         NSRect picker = NSMakeRect(148,58,256,196);
         NSBezierPath *pickerPath=[NSBezierPath bezierPathWithRoundedRect:picker xRadius:16 yRadius:16];
         [[NSColor colorWithRed:.075 green:.085 blue:.12 alpha:.985] setFill]; [pickerPath fill];
@@ -639,13 +685,14 @@ typedef struct { uint64_t user, system, idle, nice; } CPUState;
 
 @interface AppDelegate : NSObject <NSApplicationDelegate>
 @property SystemMonitor *monitor; @property NSStatusItem *statusItem; @property NSButton *menuBarButton; @property NSPopover *popover;
-@property DashboardView *dashboard; @property NSTimer *timer;
+@property DashboardView *dashboard; @property NSTimer *timer; @property NSWindow *previewWindow;
 @property id globalMouseMonitor; @property id localMouseMonitor;
 @property CGFloat cachedAvailableMenuBarWidth;
 @property NSTimeInterval lastMenuBarWidthCalculation;
 @end
 @implementation AppDelegate
 - (void)applicationDidFinishLaunching:(NSNotification *)n {
+#if !APP_STORE_BUILD
     // There must never be two menu-bar items for this app. Launch Services
     // normally enforces that for one bundle, but older builds used a different
     // bundle identifier and could remain alive at the same time.
@@ -672,6 +719,9 @@ typedef struct { uint64_t user, system, idle, nice; } CPUState;
         id theme=adaptive[@"MacUsageBarTheme"] ?: legacy[@"MacUsageBarTheme"];
         if (theme) [defaults setObject:theme forKey:@"MacUsageBarTheme"];
     }
+#else
+    NSUserDefaults *defaults=NSUserDefaults.standardUserDefaults;
+#endif
     self.monitor=[SystemMonitor new];
     // A real status item is positioned and hidden with the rest of the macOS
     // menu bar. The previous custom all-spaces panel could overlap system
@@ -683,17 +733,26 @@ typedef struct { uint64_t user, system, idle, nice; } CPUState;
     self.menuBarButton.target=self;
     self.menuBarButton.action=@selector(toggle:);
     self.menuBarButton.font=[NSFont monospacedSystemFontOfSize:11 weight:NSFontWeightMedium];
-    self.dashboard=[[DashboardView alloc]initWithFrame:NSMakeRect(0,0,420,820)];
+    CGFloat dashboardHeight=APP_STORE_BUILD ? 590.0 : 820.0;
+    self.dashboard=[[DashboardView alloc]initWithFrame:NSMakeRect(0,0,420,dashboardHeight)];
     self.menuBarButton.toolTip=self.dashboard.polish ? @"Kliknij, aby zobaczyć szczegóły użycia Maca" : @"Click to see detailed Mac usage";
     __weak AppDelegate *weakSelf = self;
 #if !APP_STORE_BUILD
     self.dashboard.optimizeHandler = ^{ [weakSelf runOptimization]; };
 #endif
     self.dashboard.languageChangedHandler = ^(BOOL polish) { weakSelf.menuBarButton.toolTip = polish ? @"Kliknij, aby zobaczyć szczegóły użycia Maca" : @"Click to see detailed Mac usage"; };
-    NSVisualEffectView *glassContainer = [[NSVisualEffectView alloc] initWithFrame:NSMakeRect(0,0,420,820)];
+    NSVisualEffectView *glassContainer = [[NSVisualEffectView alloc] initWithFrame:NSMakeRect(0,0,420,dashboardHeight)];
     glassContainer.material = NSVisualEffectMaterialHUDWindow; glassContainer.blendingMode = NSVisualEffectBlendingModeBehindWindow; glassContainer.state = NSVisualEffectStateActive;
     self.dashboard.frame = glassContainer.bounds; self.dashboard.autoresizingMask = NSViewWidthSizable | NSViewHeightSizable; [glassContainer addSubview:self.dashboard];
-    NSViewController *vc=[NSViewController new]; vc.view=glassContainer; self.popover=[NSPopover new]; self.popover.contentViewController=vc; self.popover.contentSize=NSMakeSize(420,820); self.popover.behavior=NSPopoverBehaviorTransient;
+    NSViewController *vc=[NSViewController new]; vc.view=glassContainer; self.popover=[NSPopover new]; self.popover.contentViewController=vc; self.popover.contentSize=NSMakeSize(420,dashboardHeight); self.popover.behavior=NSPopoverBehaviorTransient;
+    if ([NSProcessInfo.processInfo.arguments containsObject:@"--preview"]) {
+        self.previewWindow=[[NSWindow alloc] initWithContentRect:NSMakeRect(0,0,420,dashboardHeight) styleMask:NSWindowStyleMaskTitled|NSWindowStyleMaskClosable backing:NSBackingStoreBuffered defer:NO];
+        self.previewWindow.title=@"Mac Usage Bar — App Store Preview";
+        self.previewWindow.contentView=glassContainer;
+        [self.previewWindow center];
+        [NSApp activateIgnoringOtherApps:YES];
+        [self.previewWindow makeKeyAndOrderFront:nil];
+    }
     NSEventMask outsideClickMask=NSEventMaskLeftMouseDown|NSEventMaskRightMouseDown|NSEventMaskOtherMouseDown;
     self.localMouseMonitor=[NSEvent addLocalMonitorForEventsMatchingMask:outsideClickMask handler:^NSEvent *(NSEvent *event) {
         AppDelegate *strongSelf=weakSelf;
@@ -715,11 +774,6 @@ typedef struct { uint64_t user, system, idle, nice; } CPUState;
         [self update];
     });
     self.timer=[NSTimer scheduledTimerWithTimeInterval:2 target:self selector:@selector(update) userInfo:nil repeats:YES];
-#if !APP_STORE_BUILD
-    if ([NSProcessInfo.processInfo.arguments containsObject:@"--preview"]) {
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(.45*NSEC_PER_SEC)), dispatch_get_main_queue(), ^{ [self toggle:nil]; });
-    }
-#endif
 }
 - (void)applicationDidChangeScreenParameters:(NSNotification *)notification {
     self.cachedAvailableMenuBarWidth=0;
@@ -772,7 +826,7 @@ typedef struct { uint64_t user, system, idle, nice; } CPUState;
         NSArray *displays=CFBridgingRelease(copyManagedDisplaySpaces(mainConnection()));
         for (NSDictionary *display in displays) {
             NSNumber *currentID=display[@"Current Space"][@"id"];
-            if (!currentID) continue;
+            if (currentID == nil) continue;
             for (NSDictionary *space in display[@"Spaces"]) {
                 if ([space[@"id"] isEqual:currentID] && [space[@"type"] integerValue]==4) return YES;
             }
@@ -795,7 +849,7 @@ typedef struct { uint64_t user, system, idle, nice; } CPUState;
         if (!boundsDictionary || !CGRectMakeWithDictionaryRepresentation((__bridge CFDictionaryRef)boundsDictionary,&bounds)) continue;
         for (NSScreen *screen in NSScreen.screens) {
             NSNumber *screenNumber=screen.deviceDescription[@"NSScreenNumber"];
-            if (!screenNumber) continue;
+            if (screenNumber == nil) continue;
             CGRect displayBounds=CGDisplayBounds((CGDirectDisplayID)screenNumber.unsignedIntValue);
             BOOL coversWidth=CGRectGetWidth(bounds)>=CGRectGetWidth(displayBounds)-2.0;
             BOOL coversHeight=CGRectGetHeight(bounds)>=CGRectGetHeight(displayBounds)-2.0;
@@ -810,9 +864,9 @@ typedef struct { uint64_t user, system, idle, nice; } CPUState;
 - (CGFloat)measureAvailableMenuBarWidth {
     NSScreen *screen=self.menuBarButton.window.screen ?: NSScreen.screens.firstObject;
     if (!screen) return 90.0;
+#if !APP_STORE_BUILD
     NSRect rightArea=screen.auxiliaryTopRightArea;
     CGFloat regionWidth=NSWidth(rightArea)>0 ? NSWidth(rightArea) : NSWidth(screen.frame)*0.46;
-#if !APP_STORE_BUILD
     NSNumber *screenNumber=screen.deviceDescription[@"NSScreenNumber"];
     if (screenNumber) {
         CGRect displayBounds=CGDisplayBounds((CGDirectDisplayID)screenNumber.unsignedIntValue);
@@ -851,7 +905,8 @@ typedef struct { uint64_t user, system, idle, nice; } CPUState;
 }
 
 - (void)update {
-    BOOL fullscreen=[self frontmostApplicationHasFullscreenWindow];
+    BOOL preview=[NSProcessInfo.processInfo.arguments containsObject:@"--preview"];
+    BOOL fullscreen=preview ? NO : [self frontmostApplicationHasFullscreenWindow];
     self.statusItem.visible=!fullscreen;
     if (fullscreen) {
         if (self.popover.shown) [self.popover close];
