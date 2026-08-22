@@ -1,0 +1,9 @@
+{
+  "id" : "b86b3114-6919-4ab7-96f1-7d6a9f09e35e",
+  "targets" : [
+    {
+      "id" : "673e3dbe-9632-45ca-bb2b-65aa7a21d375",
+      "name" : "MacUsageBar"
+    }
+  ]
+}
