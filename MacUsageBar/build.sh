@@ -3,7 +3,7 @@ set -euo pipefail
 
 ROOT="${0:A:h}"
 OUTPUT="${ROOT:h}/build"
-APP="$OUTPUT/Mac Usage Bar.app"
+APP="$OUTPUT/ResourceLens.app"
 
 mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Resources"
 cp "$ROOT/Info.plist" "$APP/Contents/Info.plist"

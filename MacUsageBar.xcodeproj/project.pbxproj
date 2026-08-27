@@ -25,7 +25,7 @@
 		94F85A89336E294D504757C1 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		9A05FC141017EE65DB27DA28 /* AppIcon.icns */ = {isa = PBXFileReference; includeInIndex = 1; path = AppIcon.icns; sourceTree = "<group>"; };
 		A0E1845C7F468FE99C40F75B /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
-		AF41AD5F136791591A258F12 /* Mac Usage Bar.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Mac Usage Bar.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		AF41AD5F136791591A258F12 /* ResourceLens.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ResourceLens.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		EF79946E846AD4E35368E986 /* main.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -47,7 +47,7 @@
 		5A37AC719DA0DD07025D17AA /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				AF41AD5F136791591A258F12 /* Mac Usage Bar.app */,
+				AF41AD5F136791591A258F12 /* ResourceLens.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -101,8 +101,8 @@
 			dependencies = (
 			);
 			name = MacUsageBar;
-			productName = "Mac Usage Bar";
-			productReference = AF41AD5F136791591A258F12 /* Mac Usage Bar.app */;
+			productName = ResourceLens;
+			productReference = AF41AD5F136791591A258F12 /* ResourceLens.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -113,7 +113,7 @@
 			attributes = {
 				LastSwiftUpdateCheck = 1600;
 				LastUpgradeCheck = 2660;
-				ORGANIZATIONNAME = "Mac Usage Bar";
+				ORGANIZATIONNAME = ResourceLens;
 			};
 			buildConfigurationList = 812B03DCD70401E35C7B6A49 /* Build configuration list for PBXProject "MacUsageBar" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -167,7 +167,7 @@
 				CODE_SIGN_ENTITLEMENTS = MacUsageBar/MacUsageBar.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 26;
+				CURRENT_PROJECT_VERSION = 27;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = 4H36TJZAJ3;
 				ENABLE_APP_SANDBOX = YES;
@@ -184,7 +184,7 @@
 				MACOSX_DEPLOYMENT_TARGET = 13.0;
 				MARKETING_VERSION = 1.8.4;
 				PRODUCT_BUNDLE_IDENTIFIER = pl.marcin.macusagebar.final;
-				PRODUCT_NAME = "Mac Usage Bar";
+				PRODUCT_NAME = ResourceLens;
 				SDKROOT = macosx;
 				SUPPORTED_PLATFORMS = macosx;
 			};
@@ -199,7 +199,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = YES;
-				CURRENT_PROJECT_VERSION = 26;
+				CURRENT_PROJECT_VERSION = 27;
 				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = 4H36TJZAJ3;
@@ -218,7 +218,7 @@
 				MARKETING_VERSION = 1.8.4;
 				ONLY_ACTIVE_ARCH = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = pl.marcin.macusagebar.final;
-				PRODUCT_NAME = "Mac Usage Bar";
+				PRODUCT_NAME = ResourceLens;
 				SDKROOT = macosx;
 				STRIP_INSTALLED_PRODUCT = YES;
 				SUPPORTED_PLATFORMS = macosx;

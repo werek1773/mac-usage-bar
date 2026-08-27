@@ -510,7 +510,7 @@ typedef struct { uint64_t user, system, idle, nice; } CPUState;
         [[NSColor colorWithWhite:1 alpha:.34]setStroke];[glassHighlight stroke];
     }
     MonitorSnapshot *d=self.data; if(!d)return;
-    [self text:@"Mac Usage Bar" x:20 y:16 size:18 color:PanelTextPrimary() weight:NSFontWeightSemibold];
+    [self text:@"ResourceLens" x:20 y:16 size:18 color:PanelTextPrimary() weight:NSFontWeightSemibold];
     [self text:[self en:@"Live • refresh 2s" pl:@"Na żywo • odśw. 2 s"] x:20 y:42 size:11 color:PanelTextSecondary() weight:NSFontWeightRegular];
 
 #if APP_STORE_BUILD
@@ -578,7 +578,7 @@ typedef struct { uint64_t user, system, idle, nice; } CPUState;
     [self card:NSMakeRect(16,68,w,h) title:[self en:@"PROCESSOR" pl:@"PROCESOR"] value:[NSString stringWithFormat:@"%ld%%",(long)d.cpu] detail1:[NSString stringWithFormat:[self en:@"Thermal state: %@" pl:@"Stan termiczny: %@"],[self thermalText:d.thermalState]] detail2:[self en:@"Graph: last 2 minutes" pl:@"Wykres: ostatnie 2 minuty"] history:self.cpuHistory color:blue max:100];
     [self card:NSMakeRect(214,68,w,h) title:[self en:@"MEMORY" pl:@"PAMIĘĆ RAM"] value:[NSString stringWithFormat:@"%ld%%",(long)d.memoryPercent] detail1:[NSString stringWithFormat:[self en:@"%@ of %@" pl:@"%@ z %@"],FormatBytes(d.memoryUsed),FormatBytes(d.memoryTotal)] detail2:[NSString stringWithFormat:@"Swap: %@",FormatBytes(d.swapUsed)] history:self.ramHistory color:purple max:100];
     NSString *batteryTime = d.timeRemaining ?: [self en:@"Calculating…" pl:@"Obliczanie…"];
-    NSString *batteryDetail = d.hasBattery ? ([NSString stringWithFormat:@"%@%@", [self batteryStateText:d], (d.onAC && !d.charging ? @"" : [NSString stringWithFormat:@" • %@",batteryTime])]) : [self en:@"Desktop Mac" pl:@"Mac stacjonarny"];
+    NSString *batteryDetail = d.hasBattery ? ([NSString stringWithFormat:@"%@%@", [self batteryStateText:d], (d.onAC && !d.charging ? @"" : [NSString stringWithFormat:@" • %@",batteryTime])]) : [self en:@"Desktop computer" pl:@"Komputer stacjonarny"];
     NSString *batteryStats = @"";
     if (d.batteryHealth > 0 && d.cycles > 0) batteryStats=[NSString stringWithFormat:[self en:@"Health: %ld%% • Cycles: %ld" pl:@"Kondycja: %ld%% • Cykle: %ld"],(long)d.batteryHealth,(long)d.cycles];
     else if (d.batteryHealth > 0) batteryStats=[NSString stringWithFormat:[self en:@"Health: %ld%%" pl:@"Kondycja: %ld%%"],(long)d.batteryHealth];
@@ -686,9 +686,14 @@ typedef struct { uint64_t user, system, idle, nice; } CPUState;
 @interface AppDelegate : NSObject <NSApplicationDelegate>
 @property SystemMonitor *monitor; @property NSStatusItem *statusItem; @property NSButton *menuBarButton; @property NSPopover *popover;
 @property DashboardView *dashboard; @property NSTimer *timer; @property NSWindow *previewWindow;
+@property NSMenu *statusMenu; @property NSMenuItem *openDashboardMenuItem; @property NSMenuItem *quitMenuItem;
 @property id globalMouseMonitor; @property id localMouseMonitor;
 @property CGFloat cachedAvailableMenuBarWidth;
 @property NSTimeInterval lastMenuBarWidthCalculation;
+- (void)configureApplicationMenu;
+- (void)configureStatusMenu;
+- (void)updateStatusMenuTitles;
+- (void)showDashboard:(id)sender;
 @end
 @implementation AppDelegate
 - (void)applicationDidFinishLaunching:(NSNotification *)n {
@@ -722,6 +727,7 @@ typedef struct { uint64_t user, system, idle, nice; } CPUState;
 #else
     NSUserDefaults *defaults=NSUserDefaults.standardUserDefaults;
 #endif
+    [self configureApplicationMenu];
     self.monitor=[SystemMonitor new];
     // A real status item is positioned and hidden with the rest of the macOS
     // menu bar. The previous custom all-spaces panel could overlap system
@@ -730,24 +736,26 @@ typedef struct { uint64_t user, system, idle, nice; } CPUState;
     [defaults removeObjectForKey:@"NSStatusItem Preferred Position pl.marcin.macusagebar.adaptive-status-v3"];
     self.statusItem=[NSStatusBar.systemStatusBar statusItemWithLength:NSVariableStatusItemLength];
     self.menuBarButton=self.statusItem.button;
-    self.menuBarButton.target=self;
-    self.menuBarButton.action=@selector(toggle:);
     self.menuBarButton.font=[NSFont monospacedSystemFontOfSize:11 weight:NSFontWeightMedium];
     CGFloat dashboardHeight=APP_STORE_BUILD ? 590.0 : 820.0;
     self.dashboard=[[DashboardView alloc]initWithFrame:NSMakeRect(0,0,420,dashboardHeight)];
-    self.menuBarButton.toolTip=self.dashboard.polish ? @"Kliknij, aby zobaczyć szczegóły użycia Maca" : @"Click to see detailed Mac usage";
+    self.menuBarButton.toolTip=self.dashboard.polish ? @"Kliknij, aby otworzyć menu ResourceLens" : @"Click to open the ResourceLens menu";
     __weak AppDelegate *weakSelf = self;
 #if !APP_STORE_BUILD
     self.dashboard.optimizeHandler = ^{ [weakSelf runOptimization]; };
 #endif
-    self.dashboard.languageChangedHandler = ^(BOOL polish) { weakSelf.menuBarButton.toolTip = polish ? @"Kliknij, aby zobaczyć szczegóły użycia Maca" : @"Click to see detailed Mac usage"; };
+    self.dashboard.languageChangedHandler = ^(BOOL polish) {
+        weakSelf.menuBarButton.toolTip = polish ? @"Kliknij, aby otworzyć menu ResourceLens" : @"Click to open the ResourceLens menu";
+        [weakSelf updateStatusMenuTitles];
+    };
     NSVisualEffectView *glassContainer = [[NSVisualEffectView alloc] initWithFrame:NSMakeRect(0,0,420,dashboardHeight)];
     glassContainer.material = NSVisualEffectMaterialHUDWindow; glassContainer.blendingMode = NSVisualEffectBlendingModeBehindWindow; glassContainer.state = NSVisualEffectStateActive;
     self.dashboard.frame = glassContainer.bounds; self.dashboard.autoresizingMask = NSViewWidthSizable | NSViewHeightSizable; [glassContainer addSubview:self.dashboard];
     NSViewController *vc=[NSViewController new]; vc.view=glassContainer; self.popover=[NSPopover new]; self.popover.contentViewController=vc; self.popover.contentSize=NSMakeSize(420,dashboardHeight); self.popover.behavior=NSPopoverBehaviorTransient;
+    [self configureStatusMenu];
     if ([NSProcessInfo.processInfo.arguments containsObject:@"--preview"]) {
         self.previewWindow=[[NSWindow alloc] initWithContentRect:NSMakeRect(0,0,420,dashboardHeight) styleMask:NSWindowStyleMaskTitled|NSWindowStyleMaskClosable backing:NSBackingStoreBuffered defer:NO];
-        self.previewWindow.title=@"Mac Usage Bar — App Store Preview";
+        self.previewWindow.title=@"ResourceLens — Preview";
         self.previewWindow.contentView=glassContainer;
         [self.previewWindow center];
         [NSApp activateIgnoringOtherApps:YES];
@@ -775,6 +783,64 @@ typedef struct { uint64_t user, system, idle, nice; } CPUState;
     });
     self.timer=[NSTimer scheduledTimerWithTimeInterval:2 target:self selector:@selector(update) userInfo:nil repeats:YES];
 }
+
+- (NSString *)displayName {
+    return [NSBundle.mainBundle objectForInfoDictionaryKey:@"CFBundleDisplayName"] ?: NSProcessInfo.processInfo.processName;
+}
+
+- (void)configureApplicationMenu {
+    NSMenu *mainMenu=[NSMenu new];
+    NSMenuItem *applicationMenuItem=[NSMenuItem new];
+    NSMenu *applicationMenu=[NSMenu new];
+    NSString *name=[self displayName];
+
+    NSMenuItem *about=[[NSMenuItem alloc] initWithTitle:[NSString stringWithFormat:@"About %@",name]
+                                                 action:@selector(orderFrontStandardAboutPanel:)
+                                          keyEquivalent:@""];
+    about.target=NSApp;
+    [applicationMenu addItem:about];
+    [applicationMenu addItem:NSMenuItem.separatorItem];
+
+    NSMenuItem *quit=[[NSMenuItem alloc] initWithTitle:[NSString stringWithFormat:@"Quit %@",name]
+                                                action:@selector(terminate:)
+                                         keyEquivalent:@"q"];
+    quit.target=NSApp;
+    [applicationMenu addItem:quit];
+
+    applicationMenuItem.submenu=applicationMenu;
+    [mainMenu addItem:applicationMenuItem];
+    NSApp.mainMenu=mainMenu;
+}
+
+- (void)configureStatusMenu {
+    self.statusMenu=[NSMenu new];
+    self.openDashboardMenuItem=[[NSMenuItem alloc] initWithTitle:@""
+                                                          action:@selector(showDashboard:)
+                                                   keyEquivalent:@""];
+    self.openDashboardMenuItem.target=self;
+    [self.statusMenu addItem:self.openDashboardMenuItem];
+    [self.statusMenu addItem:NSMenuItem.separatorItem];
+    self.quitMenuItem=[[NSMenuItem alloc] initWithTitle:@""
+                                                 action:@selector(terminate:)
+                                          keyEquivalent:@"q"];
+    self.quitMenuItem.target=NSApp;
+    [self.statusMenu addItem:self.quitMenuItem];
+    self.statusItem.menu=self.statusMenu;
+    [self updateStatusMenuTitles];
+}
+
+- (void)updateStatusMenuTitles {
+    BOOL polish=self.dashboard.polish;
+    self.openDashboardMenuItem.title=polish ? @"Otwórz panel" : @"Open Dashboard";
+    self.quitMenuItem.title=[NSString stringWithFormat:(polish ? @"Zakończ %@" : @"Quit %@"),[self displayName]];
+}
+
+- (void)showDashboard:(id)sender {
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self.popover showRelativeToRect:self.menuBarButton.bounds ofView:self.menuBarButton preferredEdge:NSRectEdgeMinY];
+    });
+}
+
 - (void)applicationDidChangeScreenParameters:(NSNotification *)notification {
     self.cachedAvailableMenuBarWidth=0;
     self.lastMenuBarWidthCalculation=0;
@@ -946,7 +1012,6 @@ typedef struct { uint64_t user, system, idle, nice; } CPUState;
         : [NSString stringWithFormat:@"CPU: %ld%% · RAM: %ld%% (%.1f of %.1f GB) · Power: %@ · Battery: %@", (long)d.cpu, (long)d.memoryPercent, d.memoryUsed/1e9, d.memoryTotal/1e9, power, batteryDetail];
     [self.dashboard accept:d];
 }
-- (void)toggle:(id)sender { if(self.popover.shown)[self.popover close]; else [self.popover showRelativeToRect:self.menuBarButton.bounds ofView:self.menuBarButton preferredEdge:NSRectEdgeMinY]; }
 @end
 
 int main(int argc,const char *argv[]){ @autoreleasepool {

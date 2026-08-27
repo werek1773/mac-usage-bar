@@ -14,7 +14,7 @@ end
 
 project = Xcodeproj::Project.new(project_path)
 project.root_object.attributes["LastUpgradeCheck"] = "2660"
-project.root_object.attributes["ORGANIZATIONNAME"] = "Mac Usage Bar"
+project.root_object.attributes["ORGANIZATIONNAME"] = "ResourceLens"
 
 app_group = project.main_group.new_group("MacUsageBar", "MacUsageBar")
 main_source = app_group.new_file("main.m")
@@ -24,8 +24,8 @@ app_icon = app_group.new_file("AppIcon.icns")
 privacy_manifest = app_group.new_file("PrivacyInfo.xcprivacy")
 
 target = project.new_target(:application, "MacUsageBar", :osx, "13.0")
-target.product_name = "Mac Usage Bar"
-target.product_reference.path = "Mac Usage Bar.app"
+target.product_name = "ResourceLens"
+target.product_reference.path = "ResourceLens.app"
 target.source_build_phase.add_file_reference(main_source)
 target.resources_build_phase.add_file_reference(app_icon)
 target.resources_build_phase.add_file_reference(privacy_manifest)
@@ -57,7 +57,7 @@ target.build_configurations.each do |configuration|
     "CLANG_ENABLE_OBJC_ARC" => "YES",
     "CODE_SIGN_ENTITLEMENTS" => "MacUsageBar/MacUsageBar.entitlements",
     "CODE_SIGN_STYLE" => "Automatic",
-    "CURRENT_PROJECT_VERSION" => "26",
+    "CURRENT_PROJECT_VERSION" => "27",
     "DEAD_CODE_STRIPPING" => "YES",
     "DEVELOPMENT_TEAM" => "4H36TJZAJ3",
     "ENABLE_APP_SANDBOX" => "YES",
@@ -70,7 +70,7 @@ target.build_configurations.each do |configuration|
     "LD_RUNPATH_SEARCH_PATHS" => ["$(inherited)", "@executable_path/../Frameworks"],
     "MARKETING_VERSION" => "1.8.4",
     "PRODUCT_BUNDLE_IDENTIFIER" => "pl.marcin.macusagebar.final",
-    "PRODUCT_NAME" => "Mac Usage Bar",
+    "PRODUCT_NAME" => "ResourceLens",
     "SUPPORTED_PLATFORMS" => "macosx"
   )
 

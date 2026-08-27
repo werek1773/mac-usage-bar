@@ -2,7 +2,8 @@
 
 ## Shared values
 
-- App name: `Mac Usage Bar`
+- App Store name: `ResourceLens: System Monitor`
+- Installed app name: `ResourceLens`
 - Primary category: `Utilities`
 - Pricing: `Free`
 - Bundle ID: `pl.marcin.macusagebar.final`
@@ -16,7 +17,7 @@
 
 Subtitle:
 
-`Live Mac stats in the menu bar`
+`Performance, CPU & RAM Usage`
 
 Promotional text:
 
@@ -24,15 +25,15 @@ Promotional text:
 
 Keywords:
 
-`cpu,ram,memory,battery,power,disk,network,monitor,menu bar,system,performance,stats`
+`memory,stats,battery,health,network,speed,disk,power,menu,bar,activity,thermal,resource,device`
 
 Description:
 
-`Mac Usage Bar puts the most useful Mac performance information directly in your menu bar. Open its compact dashboard for live CPU and memory graphs, battery health and power draw, disk usage, network speed, and thermal state.`
+`ResourceLens puts the most useful system performance information directly in your menu bar. Open its compact dashboard for live CPU and memory graphs, battery health and power draw, disk usage, network speed, and thermal state.`
 
 `The menu bar readout automatically adapts to the available space, from a detailed overview to a minimal CPU indicator. Choose from four themes and switch between English and Polish at any time.`
 
-`Privacy comes first: Mac Usage Bar works entirely on your Mac. It has no accounts, ads, analytics, tracking, or network requests. Your system statistics never leave your device.`
+`Privacy comes first: ResourceLens works entirely on your computer. It has no accounts, ads, analytics, tracking, or network requests. Your system statistics never leave your device.`
 
 `Features:`
 
@@ -56,7 +57,7 @@ Description:
 
 Subtitle:
 
-`Statystyki Maca w pasku menu`
+`CPU, RAM, wydajność i użycie`
 
 Promotional text:
 
@@ -64,15 +65,15 @@ Promotional text:
 
 Keywords:
 
-`cpu,ram,pamięć,bateria,moc,dysk,sieć,monitor,pasek menu,system,wydajność,statystyki`
+`systemu,zasoby,procesor,pamięć,bateria,kondycja,sieć,prędkość,dysk,moc,menu,pasek,termiczny`
 
 Description:
 
-`Mac Usage Bar umieszcza najważniejsze informacje o wydajności Maca bezpośrednio na pasku menu. Otwórz kompaktowy panel, aby zobaczyć na żywo wykresy CPU i pamięci, kondycję baterii i pobór mocy, zajętość dysku, prędkość sieci oraz stan termiczny.`
+`ResourceLens umieszcza najważniejsze informacje o wydajności systemu bezpośrednio na pasku menu. Otwórz kompaktowy panel, aby zobaczyć na żywo wykresy CPU i pamięci, kondycję baterii i pobór mocy, zajętość dysku, prędkość sieci oraz stan termiczny.`
 
 `Odczyt na pasku menu automatycznie dopasowuje się do dostępnego miejsca — od pełnego zestawu informacji po minimalny wskaźnik CPU. Wybierz jeden z czterech motywów i w dowolnej chwili przełącz interfejs między językiem polskim i angielskim.`
 
-`Prywatność przede wszystkim: Mac Usage Bar działa w całości na Twoim Macu. Nie ma kont, reklam, analityki, śledzenia ani zapytań sieciowych. Statystyki systemowe nigdy nie opuszczają urządzenia.`
+`Prywatność przede wszystkim: ResourceLens działa w całości na Twoim komputerze. Nie ma kont, reklam, analityki, śledzenia ani zapytań sieciowych. Statystyki systemowe nigdy nie opuszczają urządzenia.`
 
 `Funkcje:`
 
@@ -94,4 +95,6 @@ Description:
 
 ## App Review notes
 
-`Mac Usage Bar is a menu-bar-only app (LSUIElement), so it does not show a Dock icon or a conventional main window. After launch, click the Mac Usage Bar readout in the macOS menu bar to open the dashboard. The app reads system metrics locally using public macOS APIs. It makes no network requests and collects no data. On a desktop Mac, the battery card correctly displays “No battery”. The Mac App Store target intentionally excludes the direct-download build's memory optimization feature and does not request administrator privileges.`
+`Resubmission resolution for version 1.8.4 (build 27): The App Store name is now “ResourceLens: System Monitor”, while the installed application name is “ResourceLens”. The previously flagged Apple product term has been removed from the app name, both localized subtitles, and the installed display name. The existing bundle identifier remains unchanged so current users can upgrade normally. The app now provides “Quit ResourceLens” in both the standard application menu and the status-item menu; Command-Q invokes the standard application termination action. Build 27 was created on a supported release environment after build 26 was rejected during automated binary processing with ITMS-90301.`
+
+`ResourceLens is a menu-bar-only app (LSUIElement), so it does not show a Dock icon or a conventional main window. After launch, click the live readout in the menu bar, then choose “Open Dashboard”. The same menu includes a visible “Quit ResourceLens” command, and Command-Q uses the standard application termination flow. The app reads system metrics locally using public macOS APIs. It makes no network requests and collects no data. On a computer without a battery, the battery card correctly displays “No battery”. The App Store target intentionally excludes the direct-download build's memory optimization feature and does not request administrator privileges.`

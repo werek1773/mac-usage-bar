@@ -15,7 +15,7 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "922E54977E4982EE04ECEB2A"
-               BuildableName = "Mac Usage Bar.app"
+               BuildableName = "ResourceLens.app"
                BlueprintName = "MacUsageBar"
                ReferencedContainer = "container:MacUsageBar.xcodeproj">
             </BuildableReference>
@@ -31,7 +31,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "922E54977E4982EE04ECEB2A"
-            BuildableName = "Mac Usage Bar.app"
+            BuildableName = "ResourceLens.app"
             BlueprintName = "MacUsageBar"
             ReferencedContainer = "container:MacUsageBar.xcodeproj">
          </BuildableReference>
@@ -54,7 +54,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "922E54977E4982EE04ECEB2A"
-            BuildableName = "Mac Usage Bar.app"
+            BuildableName = "ResourceLens.app"
             BlueprintName = "MacUsageBar"
             ReferencedContainer = "container:MacUsageBar.xcodeproj">
          </BuildableReference>
@@ -71,7 +71,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "922E54977E4982EE04ECEB2A"
-            BuildableName = "Mac Usage Bar.app"
+            BuildableName = "ResourceLens.app"
             BlueprintName = "MacUsageBar"
             ReferencedContainer = "container:MacUsageBar.xcodeproj">
          </BuildableReference>
