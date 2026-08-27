@@ -18,8 +18,8 @@
 - [x] Create and validate a local test archive with stable Xcode 26.6.
 - [x] Record build 26 as rejected during automated processing with `ITMS-90301` because its build host OS was unsupported.
 - [x] Build 27 succeeded in released Xcode Cloud, then was superseded before submission to remove the remaining internal `MacUsageBar` executable name.
-- [ ] Create the production archive for build 28 in Xcode Cloud using released Xcode and macOS versions.
-- [ ] Validate and upload build 28 with the paid Apple Developer team.
+- [x] Create the production archive for build 28 in Xcode Cloud using released Xcode 26.6 and macOS Tahoe 26.6.2.
+- [x] Validate and upload build 28 with the paid Apple Developer team.
 
 ## App Store Connect
 
@@ -32,7 +32,8 @@
 - [x] Set App Privacy to Data Not Collected.
 - [x] Answer the current age-rating questions (all content categories are None for this app).
 - [ ] Confirm agreements, tax/banking state, and EU DSA trader status as applicable.
-- [ ] Select build 28, add review contact details, paste the updated review notes, and submit for review.
+- [x] Select build 28, add review contact details, paste the updated review notes, and submit for review.
+- [x] Confirm App Store Connect status `Waiting for Review` on Aug 27, 2026 at 11:47 PM.
 
 ## Final smoke test
 
