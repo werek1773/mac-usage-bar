@@ -12,13 +12,14 @@
 - [x] Privacy manifest declares no tracking and no collected data.
 - [x] Installed app and Xcode product name are `ResourceLens`; bundle ID remains unchanged.
 - [x] The status menu includes `Quit ResourceLens`, and the app menu supports Command-Q.
-- [x] Version is `1.8.4` and build is `27`.
+- [x] Version is `1.8.4` and build is `28`.
 - [x] Deployment target is macOS 13.0.
 - [x] Release build is universal (`arm64` and `x86_64`).
 - [x] Create and validate a local test archive with stable Xcode 26.6.
 - [x] Record build 26 as rejected during automated processing with `ITMS-90301` because its build host OS was unsupported.
-- [ ] Create the production archive for build 27 in Xcode Cloud using released Xcode and macOS versions.
-- [ ] Validate and upload build 27 with the paid Apple Developer team.
+- [x] Build 27 succeeded in released Xcode Cloud, then was superseded before submission to remove the remaining internal `MacUsageBar` executable name.
+- [ ] Create the production archive for build 28 in Xcode Cloud using released Xcode and macOS versions.
+- [ ] Validate and upload build 28 with the paid Apple Developer team.
 
 ## App Store Connect
 
@@ -31,7 +32,7 @@
 - [x] Set App Privacy to Data Not Collected.
 - [x] Answer the current age-rating questions (all content categories are None for this app).
 - [ ] Confirm agreements, tax/banking state, and EU DSA trader status as applicable.
-- [ ] Select build 27, add review contact details, paste the updated review notes, and submit for review.
+- [ ] Select build 28, add review contact details, paste the updated review notes, and submit for review.
 
 ## Final smoke test
 

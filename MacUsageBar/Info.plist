@@ -9,7 +9,7 @@
     <key>CFBundleIconFile</key>
     <string>AppIcon</string>
     <key>CFBundleExecutable</key>
-    <string>MacUsageBar</string>
+    <string>ResourceLens</string>
     <key>CFBundleIdentifier</key>
 	<string>pl.marcin.macusagebar.final</string>
     <key>CFBundleInfoDictionaryVersion</key>
@@ -21,7 +21,7 @@
     <key>CFBundleShortVersionString</key>
     <string>1.8.4</string>
     <key>CFBundleVersion</key>
-    <string>27</string>
+    <string>28</string>
     <key>ITSAppUsesNonExemptEncryption</key>
     <false/>
     <key>LSApplicationCategoryType</key>

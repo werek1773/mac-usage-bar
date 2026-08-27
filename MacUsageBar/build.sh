@@ -17,8 +17,8 @@ xcrun clang \
   -framework IOKit \
   -framework ServiceManagement \
   "$ROOT/main.m" \
-  -o "$APP/Contents/MacOS/MacUsageBar"
+  -o "$APP/Contents/MacOS/ResourceLens"
 
-chmod +x "$APP/Contents/MacOS/MacUsageBar"
+chmod +x "$APP/Contents/MacOS/ResourceLens"
 codesign --force --deep --sign - "$APP"
 echo "$APP"
